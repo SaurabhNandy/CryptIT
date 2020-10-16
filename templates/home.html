@@ -8,6 +8,7 @@
         <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
         <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
         <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+        
         <!------ Include the above in your HEAD tag ---------->
     </head>
 
@@ -203,7 +204,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text">Private Key</span>
                     </div>
-                    <textarea id="enc-pvtkey" class="form-control form-control-plaintext" rows="4" readonly aria-label="With textarea"></textarea>
+                    <textarea id="enc-pvtkey" class="form-control form-control-plaintext" rows="4" readonly></textarea>                    
                 </div>
 
                 <div class="col-12 input-group mb-3" id="ip-asym-dec">
@@ -216,9 +217,9 @@
 
             <div class="row">
                 <div class="col-md-9">    
-                    <div class="form-group files mx-auto">
-                        <input id="file" name="file" type="file" class="form-control" multiple>
-                    </div>      
+                    <form id="file-form" class="form-group files mx-auto">
+                        <input id="file-ip" name="file" type="file" class="form-control" multiple>
+                    </form>      
                 </div>
 
                 <div class="col-md-3 text-center row justify-content-center align-self-center">
@@ -226,6 +227,7 @@
                         <input type="checkbox" id="enc-dec-toggle" data-toggle="toggle" data-on="<i class='fa fa-lock'></i> Encrypt" data-off="<i class='fa fa-unlock'></i> Decrypt" data-onstyle="success" data-offstyle="danger" checked>
                     </div>
                     <button id="submit-btn" type="button" class="btn btn-lg btn-block btn-outline-light">GENERATE</button>
+                    <div id="error" class="mt-3 text-danger"></div>
                 </div>
             </div>
         </div>
@@ -286,6 +288,73 @@
                     else{
                         $("#ip-asym-dec").show();
                     }
+                }
+            });
+
+            $("#submit-btn").click(function(){
+                $("#error").html("");
+                if($("input[name='crypt-option']:checked").val()!="digital-cert" && $("#file-ip").val()==""){
+                    $("#error").html("*Please select a file").fadeOut().fadeIn();
+                }
+                else{
+                    if($("input[name='crypt-option']:checked").val()=="sym-enc"){
+                        $("#error").html("*Please enter a password").fadeOut().fadeIn();;
+                    }
+                    else if($("input[name='crypt-option']:checked").val()=="asym-enc" && $("#enc-dec-toggle").prop("checked")==false){
+                        $("#error").html("*Please enter the key").fadeOut().fadeIn()
+                    }
+                    else{
+                        if($("input[name='crypt-option']:checked").val()=="digital-cert"){
+                            var data = new FormData();
+                        }
+                        else{
+                            var form = $('#file-form')[0];
+                            var data = new FormData(form);
+                            var url = "";
+                            if($("input[name='crypt-option']:checked").val()=="hash"){
+                                data.append("algo", "-sha256");
+                                url = "./hash";
+                            }
+                            else if($("input[name='crypt-option']:checked").val()=="sym-enc"){
+                                if($("#enc-dec-toggle").prop("checked")==true){
+                                    data.append("type", "enc");
+                                }
+                                else{
+                                    data.append("type", "dec");
+                                }
+                                data.append("algo", "-aes-256-cbc");
+                                url = "./symmetric-encryption";
+                            }
+                            else if($("input[name='crypt-option']:checked").val()=="asym-enc"){
+                                if($("#enc-dec-toggle").prop("checked")==true){
+                                    data.append("type", "enc");
+                                }
+                                else{
+                                    data.append("type", "dec");
+                                }
+                                data.append("algo", "-rsa");
+                                url = "./asymmetric-encryption";
+                            }
+                            
+                            $.ajax({
+                                type: "POST",
+                                enctype: 'multipart/form-data',
+                                url: url,
+                                data: data,
+                                processData: false,
+                                contentType: false,
+                                cache: false,
+                                timeout: 600000,
+                                success: function (res) {   
+                                    console.log("SUCCESS : ", res);
+                                },
+                                error: function (e) {
+                                    console.log("ERROR : ", e);
+                                }
+                            });
+                        }
+                        
+                    } 
                 }
             });
         });

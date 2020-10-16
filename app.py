@@ -1,7 +1,11 @@
 from flask import Flask, render_template, request, redirect, session, url_for
+from werkzeug.utils import secure_filename
 import json
 import os
 import random
+import time
+
+# secureIt or crypton
 
 
 app = Flask(__name__)
@@ -19,7 +23,8 @@ def home():
 @app.route('/gen-keypair', methods=['GET'])
 def genKeyPair():
     names = [str(random.randint(rand_beg, rand_end))+".pem", str(random.randint(rand_beg, rand_end))+".pem"]
-    out = os.system("openssl genrsa -out "+names[0]+" 2048")
+    command = "openssl genrsa -out "+names[0]+" 2048 2>/dev/null"
+    out = os.system(command)
     if out!=0:
         return json.dumps({"status": "Error"})
     while True:
@@ -27,7 +32,9 @@ def genKeyPair():
             break
     with open(names[0], 'r') as f:
         private_key = f.read()
-    out = os.system("openssl rsa -in "+names[0]+" -pubout -out "+names[1])
+    
+    command = "openssl rsa -in "+names[0]+" -pubout -out "+names[1]+" 2>/dev/null"
+    out = os.system(command)
     if out!=0:
         return json.dumps({"status": "Error"})
     while True:
@@ -42,11 +49,16 @@ def genKeyPair():
 
 @app.route('/hash', methods=['POST'])
 def hash():
-    filename = 'random.txt' 
-    hash_type="-sha256"
-    name = str(random.randint(rand_beg, rand_end))+".txt"
-    command = "openssl dgst -out "+name+" "+hash_type+" "+filename
-    os.system(command)
+    print(request.files)
+    file_ = request.files['file']
+    filename = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file_.filename))
+    file_.save(filename)
+
+    hash_type = "-" + request.form["algo"].lstrip("-")
+    name = os.path.join(app.config['UPLOAD_FOLDER'], str(random.randint(rand_beg, rand_end))+".txt")
+
+    command = "openssl dgst -out "+name+" "+hash_type+" "+filename+" 2>/dev/null"
+    out = os.system(command)
     if out!=0:
         return json.dumps({"status": "Error"})
     while True:
@@ -55,12 +67,28 @@ def hash():
     with open(name, 'r') as f:
         digest = f.read()
     os.remove(name)
+    os.remove(filename)
     return json.dumps({"status": "Success", "digest": digest})
 
 
 @app.route('/symmetric-encryption', methods=['POST'])
-def symmetricEncryption(filename, hash_type="-sha256"):
-    print()
+def symmetricEncryption():
+    filename = 'h'
+    enc_type = "-aes-256-cbc"
+    password = "asdfgh"
+    name = str(random.randint(rand_beg, rand_end))+".enc"
+    command = "openssl enc "+enc_type+" -pass pass:"+password+" -in "+filename+" -out "+name+" 2>/dev/null"
+    os.system(command)
+    if out!=0:
+        return json.dumps({"status": "Error"})
+    while True:
+        if os.path.exists(name):
+            break
+    with open(name, 'r') as f:
+        encrypted_file = f.read()
+    os.remove(name)
+    return json.dumps({"status": "Success", "digest": encrypted_file})
+    
 
 
 if __name__=="__main__": 
