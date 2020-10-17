@@ -2,133 +2,25 @@
 
 <html>
     <head>
+        <title>CryptIt</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- bootstrap4 -->
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        
+        <!-- fa icons -->
         <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" id="bootstrap-css">
+        
+        <!-- bootstrap toggle -->
+        <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+        
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'home.css') }} ">
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
         <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-        <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
         <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-        
-        <!------ Include the above in your HEAD tag ---------->
     </head>
 
-    <style> 
-        body {
-            background-color: #222;
-            color: #f1f1f1;
-        }
-        /* body {
-            background-color:  #f1f1f1;
-            color: #222;
-        } */
-        .files input {
-            outline: 2px dashed #92b0b3;
-            outline-offset: -10px;
-            -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
-            transition: outline-offset .15s ease-in-out, background-color .15s linear;
-            padding: 120px 0px 85px 35%;
-            text-align: center !important;
-            margin: 0;
-            width: 100% !important;
-        }
-        .files input:focus{     outline: 2px dashed #407377;  outline-offset: -10px;
-            -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
-            transition: outline-offset .15s ease-in-out, background-color .15s linear; border:1px solid #407377;
-        }
-        .files{ position:relative}
-        .files:after {  pointer-events: none;
-            position: absolute;
-            top: 60px;
-            left: 0;
-            width: 50px;
-            right: 0;
-            height: 56px;
-            content: "";
-            background-image: url(https://image.flaticon.com/icons/png/128/109/109612.png);
-            display: block;
-            margin: 0 auto;
-            background-size: 100%;
-            background-repeat: no-repeat;
-        }
-        .color input{ background-color:#f1f1f1;}
-        .files:before {
-            position: absolute;
-            bottom: 10px;
-            left: 0;  pointer-events: none;
-            width: 100%;
-            right: 0;
-            height: 57px;
-            content: " or drag it here. ";
-            display: block;
-            margin: 0 auto;
-            color: #2ea591;
-            font-weight: 600;
-            text-transform: capitalize;
-            text-align: center;
-        }
-
-        .custom-radios div {
-            display: inline-block;
-        }
-        .custom-radios input[type="radio"] {
-            display: none;
-        }
-        .custom-radios input[type="radio"] + label {
-            color: #333;
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-        }
-        .custom-radios input[type="radio"] + label span {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            margin: -1px 4px 0 0;
-            vertical-align: middle;
-            cursor: pointer;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.33);
-            background-repeat: no-repeat;
-            background-position: center;
-            text-align: center;
-            line-height: 44px;
-        }
-        .custom-radios input[type="radio"] + label span img {
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-        .custom-radios input[type="radio"]#color-0 + label span {
-            background-color: #9500cf;
-        }
-        .custom-radios input[type="radio"]#color-1 + label span {
-            background-color: #2ecc71;
-        }
-        .custom-radios input[type="radio"]#color-2 + label span {
-            background-color: #3498db;
-        }
-        .custom-radios input[type="radio"]#color-3 + label span {
-            background-color: #f1c40f;
-        }
-        .custom-radios input[type="radio"]#color-4 + label span {
-            background-color: #e74c3c;
-        }
-        .custom-radios input[type="radio"]:checked + label span img {
-            opacity: 1;
-        }
-        .toggle-off {
-            box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
-        }
-        .toggle.off {
-            border-color: rgba(0, 0, 0, .25);
-        }
-
-        .toggle-handle {
-            background-color: white;
-            border: thin rgba(0, 0, 0, .25) solid;
-        }
-
-    </style>
-
+    
     <body>
         <div class="container col-md-10 mx-auto mt-5">
             <div class="row my-2">
@@ -185,12 +77,12 @@
                 </div>
             </div>
 
-            <div class="row" id="input-fields">
+            <div class="row mb-3" id="input-fields">
                 <div class="col-12 input-group mb-3" id="ip-sym-enc">
                     <div class="input-group-prepend">
                       <span class="input-group-text" id="basic-addon1">Enter password</span>
                     </div>
-                    <input type="text" class="form-control" placeholder="Password should be strong enough" aria-label="Username" aria-describedby="basic-addon1">
+                    <input type="text" id="sym-password" class="form-control" placeholder="Password should be strong enough" aria-label="Username" aria-describedby="basic-addon1">
                 </div>
                 
                 <div class="col-12 input-group mb-3" id="ip-asym-enc-pub">
@@ -198,6 +90,10 @@
                         <span class="input-group-text">Public Key</span>
                     </div>
                     <textarea id="enc-pubkey" class="form-control form-control-plaintext" rows="4" readonly aria-label="With textarea"></textarea>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="copy-btn" onclick="copyToClipboard('enc-pubkey', this)"><i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard</button>
+                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>Key File</button>
+                    </div>
                 </div>
 
                 <div class="col-12 input-group mb-3" id="ip-asym-enc-priv">
@@ -205,6 +101,10 @@
                         <span class="input-group-text">Private Key</span>
                     </div>
                     <textarea id="enc-pvtkey" class="form-control form-control-plaintext" rows="4" readonly></textarea>                    
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="copy-btn" onclick="copyToClipboard('enc-pvtkey', this)"><i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard</button>
+                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>Key File</button>
+                    </div>
                 </div>
 
                 <div class="col-12 input-group mb-3" id="ip-asym-dec">
@@ -212,6 +112,9 @@
                         <span class="input-group-text">Enter private key</span>
                     </div>
                     <textarea class="form-control" rows="5" aria-label="With textarea"></textarea>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Key File</button>
+                    </div>
                 </div>
             </div>
 
@@ -230,6 +133,16 @@
                     <div id="error" class="mt-3 text-danger"></div>
                 </div>
             </div>
+
+            <div class="row mb-5" id="output-div">
+                <div class="input-group mb-3">
+                    <textarea id="output" class="form-control form-control-plaintext" rows="4" readonly></textarea>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="copy-btn" onclick="copyToClipboard('output', this)"><i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard</button>
+                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>as File</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
 
@@ -241,6 +154,7 @@
             $("#ip-asym-enc-priv").hide();
             $("#ip-asym-dec").hide();
             $("#enc-dec-toggle-div").hide();
+            $("#output-div").hide();
 
             $("input[name='crypt-option']").change(function(){
                 console.log($("input[name='crypt-option']:checked").val());
@@ -249,6 +163,7 @@
                 $("#ip-asym-enc-priv").hide();
                 $("#ip-asym-dec").hide();
                 $("#enc-dec-toggle-div").hide();
+                // $("#output-div").hide();
                 $("#submit-btn").html("GENERATE"); 
 
                 if($("input[name='crypt-option']:checked").val()=="sym-enc"){
@@ -297,7 +212,7 @@
                     $("#error").html("*Please select a file").fadeOut().fadeIn();
                 }
                 else{
-                    if($("input[name='crypt-option']:checked").val()=="sym-enc"){
+                    if($("input[name='crypt-option']:checked").val()=="sym-enc" && $("#sym-password").val()==""){
                         $("#error").html("*Please enter a password").fadeOut().fadeIn();;
                     }
                     else if($("input[name='crypt-option']:checked").val()=="asym-enc" && $("#enc-dec-toggle").prop("checked")==false){
@@ -323,6 +238,7 @@
                                     data.append("type", "dec");
                                 }
                                 data.append("algo", "-aes-256-cbc");
+                                data.append("password", $("#sym-password").val());
                                 url = "./symmetric-encryption";
                             }
                             else if($("input[name='crypt-option']:checked").val()=="asym-enc"){
@@ -334,7 +250,7 @@
                                 }
                                 data.append("algo", "-rsa");
                                 url = "./asymmetric-encryption";
-                            }
+                            };
                             
                             $.ajax({
                                 type: "POST",
@@ -344,14 +260,24 @@
                                 processData: false,
                                 contentType: false,
                                 cache: false,
-                                timeout: 600000,
+                                // timeout: 600000,
                                 success: function (res) {   
                                     console.log("SUCCESS : ", res);
+                                    let output = JSON.parse(res);
+                                    if (output["status"]=="Success"){
+                                        $("#output").val(output["data"]);
+                                        $("#output-div").show();
+                                    }
+                                    else{
+                                        console.log("ERROR : ");
+                                    }
+
                                 },
                                 error: function (e) {
                                     console.log("ERROR : ", e);
                                 }
                             });
+                            
                         }
                         
                     } 
@@ -371,6 +297,18 @@
                     $("#enc-pvtkey").val("Error");
                 }
             });
+        }
+
+        function copyToClipboard(id, button) {
+            let copyText = document.getElementById(id);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+            document.execCommand("copy");
+            
+            $(button).html('<i class="fa fa-check" aria-hidden="true"></i><br>Copied');
+            setTimeout(function () {
+                $(button).html('<i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard');
+            }, 3000);    
         }
     </script>
 </html>
