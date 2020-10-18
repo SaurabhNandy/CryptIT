@@ -20,6 +20,14 @@
         <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     </head>
 
+    <style>
+        a:link { 
+            text-decoration: none; 
+        } 
+        a:hover { 
+            text-decoration: none; 
+        } 
+    </style>
     
     <body>
         <div class="container col-md-10 mx-auto mt-5">
@@ -109,11 +117,41 @@
 
                 <div class="col-12 input-group mb-3" id="ip-asym-dec">
                     <div class="input-group-prepend">
-                        <span class="input-group-text">Enter private key</span>
+                        <span class="input-group-text">Enter private<br> key</span>
                     </div>
                     <textarea class="form-control" rows="5" aria-label="With textarea"></textarea>
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Key File</button>
+                        <button class="btn btn-outline-secondary" type="button" id="upload-btn"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Key File</button>
+                    </div>
+                </div>
+
+                <div class="col-12 input-group mb-3" id="ip-cert-pvt">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Enter private<br> key</span>
+                    </div>
+                    <textarea id="cert-pvtkey" class="form-control" rows="5" aria-label="With textarea"></textarea>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="upload-btn"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Key File</button>
+                    </div>
+                </div>
+
+                <div class="col-12 input-group mb-3" id="ip-cert-pub">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Enter public<br> key</span>
+                    </div>
+                    <textarea id="cert-pubkey" class="form-control" rows="5" aria-label="With textarea"></textarea>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="upload-btn"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Key File</button>
+                    </div>
+                </div>
+
+                <div class="col-12 input-group mb-3" id="ip-cert-sign">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Enter digital<br> signature</span>
+                    </div>
+                    <textarea id="cert-sign" class="form-control" rows="5" aria-label="With textarea"></textarea>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Signature File</button>
                     </div>
                 </div>
             </div>
@@ -129,17 +167,20 @@
                     <div id="enc-dec-toggle-div" class="mb-3">
                         <input type="checkbox" id="enc-dec-toggle" data-toggle="toggle" data-on="<i class='fa fa-lock'></i> Encrypt" data-off="<i class='fa fa-unlock'></i> Decrypt" data-onstyle="success" data-offstyle="danger" checked>
                     </div>
+                    <div id="sign-verify-toggle-div" class="mb-3">
+                        <input type="checkbox" id="sign-verify-toggle" data-toggle="toggle" data-on="<i class='fa fa-lock'></i> Sign" data-off="<i class='fa fa-unlock'></i> Verify" data-onstyle="success" data-offstyle="danger" checked>
+                    </div>
                     <button id="submit-btn" type="button" class="btn btn-lg btn-block btn-outline-light">GENERATE</button>
                     <div id="error" class="mt-3 text-danger"></div>
                 </div>
             </div>
 
-            <div class="row mb-5" id="output-div">
+            <div class="row mb-5 mt-3" id="output-div">
                 <div class="input-group mb-3">
                     <textarea id="output" class="form-control form-control-plaintext" rows="4" readonly></textarea>
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="button" id="copy-btn" onclick="copyToClipboard('output', this)"><i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard</button>
-                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>as File</button>
+                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><a id="output-download" download><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>as File</a></button>
                     </div>
                 </div>
             </div>
@@ -153,8 +194,13 @@
             $("#ip-asym-enc-pub").hide();
             $("#ip-asym-enc-priv").hide();
             $("#ip-asym-dec").hide();
+            $("#ip-cert-sign").hide();
+            $("#ip-cert-pub").hide();
+            $("#ip-cert-pvt").hide();
             $("#enc-dec-toggle-div").hide();
+            $("#sign-verify-toggle-div").hide();
             $("#output-div").hide();
+            
 
             $("input[name='crypt-option']").change(function(){
                 console.log($("input[name='crypt-option']:checked").val());
@@ -162,7 +208,11 @@
                 $("#ip-asym-enc-pub").hide();
                 $("#ip-asym-enc-priv").hide();
                 $("#ip-asym-dec").hide();
+                $("#ip-cert-sign").hide();
+                $("#ip-cert-pub").hide();
+                $("#ip-cert-pvt").hide();
                 $("#enc-dec-toggle-div").hide();
+                $("#sign-verify-toggle-div").hide();
                 // $("#output-div").hide();
                 $("#submit-btn").html("GENERATE"); 
 
@@ -179,12 +229,36 @@
                     $("#submit-btn").html("ENCRYPT"); 
                 }
                 else if($("input[name='crypt-option']:checked").val()=="digital-sign"){
-                    $("#submit-btn").html("SIGN"); 
+                    
+                    if($("#sign-verify-toggle").prop("checked")==true){
+                        $("#submit-btn").html("SIGN");
+                        $("#ip-cert-pvt").show();
+                    }
+                    else{
+                        $("#submit-btn").html("VERIFY");
+                        $("#ip-cert-pub").show();
+                        $("#ip-cert-sign").show();
+                    }
+                    $("#sign-verify-toggle-div").show();  
                 } 
             });
 
+            $("#sign-verify-toggle").change(function(){
+                $("#ip-cert-pvt").hide(); 
+                $("#ip-cert-pub").hide();
+                $("#ip-cert-sign").hide(); 
+                if($(this).prop("checked")==true){
+                    $("#submit-btn").html("SIGN");
+                    $("#ip-cert-pvt").show(); 
+                }
+                else{
+                    $("#submit-btn").html("VERIFY");
+                    $("#ip-cert-pub").show();
+                    $("#ip-cert-sign").show(); 
+                }
+            });
+
             $("#enc-dec-toggle").change(function(){
-                console.log($(this).prop("checked"));
                 if($(this).prop("checked")==true){
                     $("#submit-btn").html("ENCRYPT"); 
                 }
@@ -212,13 +286,31 @@
                     $("#error").html("*Please select a file").fadeOut().fadeIn();
                 }
                 else{
+                    var flag = true;
                     if($("input[name='crypt-option']:checked").val()=="sym-enc" && $("#sym-password").val()==""){
-                        $("#error").html("*Please enter a password").fadeOut().fadeIn();;
+                        $("#error").html("*Please enter a password").fadeOut().fadeIn();
+                        flag = false;
                     }
-                    else if($("input[name='crypt-option']:checked").val()=="asym-enc" && $("#enc-dec-toggle").prop("checked")==false){
-                        $("#error").html("*Please enter the key").fadeOut().fadeIn()
+                    else if($("input[name='crypt-option']:checked").val()=="asym-enc"){
+                        if($("#enc-dec-toggle").prop("checked")==false){
+                            $("#error").html("*Please enter the key").fadeOut().fadeIn()
+                        }
                     }
-                    else{
+                    else if($("input[name='crypt-option']:checked").val()=="digital-sign"){
+                        if($("#sign-verify-toggle").prop("checked")==true && $("#cert-pvtkey").val()==""){
+                            $("#error").html("*Please enter the private key").fadeOut().fadeIn();
+                            flag = "false";
+                        }
+                        else if($("#sign-verify-toggle").prop("checked")==false && $("#cert-pubkey").val()==""){
+                            $("#error").html("*Please enter the public key").fadeOut().fadeIn();
+                            flag = "false";
+                        }
+                        else if($("#sign-verify-toggle").prop("checked")==false && $("#cert-sign").val()==""){
+                            $("#error").html("*Please enter the digital signature").fadeOut().fadeIn();
+                            flag = "false";
+                        } 
+                    }
+                    if(flag==true){
                         if($("input[name='crypt-option']:checked").val()=="digital-cert"){
                             var data = new FormData();
                         }
@@ -250,6 +342,19 @@
                                 }
                                 data.append("algo", "-rsa");
                                 url = "./asymmetric-encryption";
+                            }
+                            else if($("input[name='crypt-option']:checked").val()=="digital-sign"){
+                                if($("#sign-verify-toggle").prop("checked")==true){
+                                    data.append("type", "sign");
+                                    data.append("pvt_key", $("#cert-pvtkey").val());
+                                }
+                                else{
+                                    data.append("type", "verify");
+                                    data.append("pub_key", $("#cert-pubkey").val());
+                                    data.append("digital_sign", $("#cert-sign").val());
+                                }
+                                data.append("hash_algo", "-sha256");
+                                url = "./digital-signature";
                             };
                             
                             $.ajax({
@@ -265,13 +370,14 @@
                                     console.log("SUCCESS : ", res);
                                     let output = JSON.parse(res);
                                     if (output["status"]=="Success"){
-                                        $("#output").val(output["data"]);
+                                        $("#output-download").attr("href", output["file_url"]);
+                                        let txt_op = readFile(output["file_url"]);
+                                        $("#output").val(txt_op);
                                         $("#output-div").show();
                                     }
                                     else{
                                         console.log("ERROR : ");
                                     }
-
                                 },
                                 error: function (e) {
                                     console.log("ERROR : ", e);
@@ -302,13 +408,28 @@
         function copyToClipboard(id, button) {
             let copyText = document.getElementById(id);
             copyText.select();
-            copyText.setSelectionRange(0, 99999); /*For mobile devices*/
             document.execCommand("copy");
             
             $(button).html('<i class="fa fa-check" aria-hidden="true"></i><br>Copied');
             setTimeout(function () {
                 $(button).html('<i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard');
             }, 3000);    
+        }
+
+        function readFile(url){
+            let return_data = "";
+            $.ajax({
+                url: url,
+                async: false,
+                success: function (data){
+                    return_data = data;
+                }, 
+                error: function(e){
+                    console.log("ERROR : ", e);
+                    return_data = "ERROR"+e;
+                }
+            });
+            return return_data;
         }
     </script>
 </html>
