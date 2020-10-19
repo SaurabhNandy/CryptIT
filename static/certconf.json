@@ -1,0 +1,33 @@
+{
+    "pre": "[req]\ndistinguished_name = req_distinguished_name\nx509_extensions = v3_req\nprompt = no\n[req_distinguished_name]\n",
+    "data": {
+        "Country": {
+            "abbrv": "C",
+            "default": "US"
+        },
+        "State": {
+            "abbrv": "ST",
+            "default": "VA"
+        },
+        "Locality": {
+            "abbrv": "L", 
+            "default": "SomeCity"
+        },
+        "Organization": {
+            "abbrv": "O",
+            "default": "MyCompany"
+        },
+        "Organizational Unit": {
+            "abbrv": "OU",
+            "default": "MyDivision"
+        },
+        "Common Name":  {
+            "abbrv": "CN",
+            "default": "www.company.com"
+        }
+    },
+    "post": "[v3_req]\nkeyUsage = critical, digitalSignature, keyAgreement\nextendedKeyUsage = serverAuth\nsubjectAltName = @alt_names\n[alt_names]\n",
+    "dns": {
+        "default": "DNS.1 = www.company.com\nDNS.2 = company.com"
+    }
+}

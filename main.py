@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, render_template, request, url_for
 from werkzeug.utils import secure_filename
 import json
 import os
@@ -92,6 +92,24 @@ def genDigitalSignature():
         return json.dumps(verified_data)
     
 
+@app.route('/ssl-certificate', methods=['POST'])
+def genSSLCertificate():
+    algo = "rsa:2048"
+    hash_algo = "-sha256"
+    days = request.form["days"]
+    if not (days and days.isdigit()):
+        days = "365"
+    certificate_data = sslCertificate(request.form, days, algo, hash_algo)
+    return json.dumps(certificate_data)
+
+
+@app.route('/delete', methods=['POST'])
+def deleteData():
+    files = request.form["data"].split(",")
+    for f in files:
+        if f.startswith(upload_folder) and os.path.isfile(f) and os.path.exists(f):
+            os.remove(f)
+    return {"status": "Success"}
 
 if __name__=="__main__": 
     app.run(debug=True)

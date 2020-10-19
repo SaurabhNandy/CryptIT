@@ -29,7 +29,7 @@
         } 
     </style>
     
-    <body>
+    <body onbeforeunload="return beforeUnloadFunction()" >
         <div class="container col-md-10 mx-auto mt-5">
             <div class="row my-2">
                 <div class="col-2 text-center mx-auto">Generate File Hash</div>
@@ -43,7 +43,7 @@
                     <input type="radio" id="color-0" name="crypt-option" value="hash">
                     <label for="color-0">
                       <span>
-                        <img class="mb-2 mx-auto" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/242518/check-icn.svg" alt="Checked Icon" />
+                        <img class="mb-2 mx-auto" src="{{ url_for('static', filename = 'check-icn.svg') }}" alt="Checked Icon" />
                       </span>
                     </label>
                 </div>
@@ -52,7 +52,7 @@
                   <input type="radio" id="color-1" name="crypt-option" value="sym-enc">
                   <label for="color-1">
                     <span>
-                      <img class="mb-2 mx-auto" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/242518/check-icn.svg" alt="Checked Icon" />
+                      <img class="mb-2 mx-auto" src="{{ url_for('static', filename = 'check-icn.svg') }}" alt="Checked Icon" />
                     </span>
                   </label>
                 </div>
@@ -61,7 +61,7 @@
                   <input type="radio" id="color-2" name="crypt-option" value="asym-enc">
                   <label for="color-2">
                     <span>
-                      <img class="mb-2 mx-auto" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/242518/check-icn.svg" alt="Checked Icon" />
+                      <img class="mb-2 mx-auto" src="{{ url_for('static', filename = 'check-icn.svg') }}" alt="Checked Icon" />
                     </span>
                   </label>
                 </div>
@@ -70,16 +70,16 @@
                   <input type="radio" id="color-3" name="crypt-option" value="digital-sign">
                   <label for="color-3">
                     <span>
-                      <img class="mb-2 mx-auto" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/242518/check-icn.svg" alt="Checked Icon" />
+                      <img class="mb-2 mx-auto" src="{{ url_for('static', filename = 'check-icn.svg') }}" alt="Checked Icon" />
                     </span>
                   </label>
                 </div>
               
                 <div class="col-2 text-center mx-auto">
-                  <input type="radio" id="color-4" name="crypt-option" value="digital-cert">
+                  <input type="radio" id="color-4" name="crypt-option" value="ssl-cert">
                   <label for="color-4">
                     <span>
-                      <img class="mb-2 mx-auto" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/242518/check-icn.svg" alt="Checked Icon" />
+                      <img class="mb-2 mx-auto" src="{{ url_for('static', filename = 'check-icn.svg') }}" alt="Checked Icon" />
                     </span>
                   </label>
                 </div>
@@ -119,9 +119,9 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text">Enter private<br> key</span>
                     </div>
-                    <textarea class="form-control" rows="5" aria-label="With textarea"></textarea>
+                    <textarea id="" class="form-control" rows="5" aria-label="With textarea"></textarea>
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="upload-btn"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Key File</button>
+                        <button class="btn btn-outline-secondary" type="button" id="upload-btn" onclick="uploadFile('')"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Key File</button>
                     </div>
                 </div>
 
@@ -131,7 +131,7 @@
                     </div>
                     <textarea id="cert-pvtkey" class="form-control" rows="5" aria-label="With textarea"></textarea>
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="upload-btn"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Key File</button>
+                        <button class="btn btn-outline-secondary" type="button" id="upload-btn" onclick="uploadFile('cert-pvtkey')"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Key File</button>
                     </div>
                 </div>
 
@@ -141,7 +141,7 @@
                     </div>
                     <textarea id="cert-pubkey" class="form-control" rows="5" aria-label="With textarea"></textarea>
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="upload-btn"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Key File</button>
+                        <button class="btn btn-outline-secondary" type="button" id="upload-btn" onclick="uploadFile('cert-pubkey')"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Key File</button>
                     </div>
                 </div>
 
@@ -151,9 +151,62 @@
                     </div>
                     <textarea id="cert-sign" class="form-control" rows="5" aria-label="With textarea"></textarea>
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Signature File</button>
+                        <button class="btn btn-outline-secondary" type="button" id="upload-btn" onclick="uploadFile('cert-sign')"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Signature File</button>
                     </div>
                 </div>
+
+                <div id="ssl-cert-div" class="row">
+                    <div class="col-6 input-group mb-3" id="" style="max-width: 100%;">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="basic-addon1">Country</span>
+                        </div>
+                        <input type="text" id="country" class="form-control" placeholder="For example: US" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="col-6 input-group mb-3" id="" style="max-width: 100%;">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="basic-addon1">State</span>
+                        </div>
+                        <input type="text" id="state" class="form-control" placeholder="For example: VA" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="col-6 input-group mb-3" id="" style="max-width: 100%;">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="basic-addon1">Locality</span>
+                        </div>
+                        <input type="text" id="locality" class="form-control" placeholder="For example: SomeCity" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="col-6 input-group mb-3" id="" style="max-width: 100%;">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="basic-addon1">Organization</span>
+                        </div>
+                        <input type="text" id="organization" class="form-control" placeholder="For example: MyCompany" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="col-6 input-group mb-3" id="" style="max-width: 100%;">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="basic-addon1">Organizational Unit</span>
+                        </div>
+                        <input type="text" id="organizational-unit" class="form-control" placeholder="For example: MyDivision" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="col-6 input-group mb-3" id="" style="max-width: 100%;">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="basic-addon1">Common Name</span>
+                        </div>
+                        <input type="text" id="common-name" class="form-control" placeholder="For example: www.company.com" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="col-4 input-group mb-3" id="" style="max-width: 100%;">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="basic-addon1">Certificate Validity</span>
+                        </div>
+                        <input type="text" id="days" class="form-control" placeholder="In days (For eg: 365)" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="col-8 input-group mb-3" id="" style="max-width: 100%;">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="basic-addon1">DNS information</span>
+                        </div>
+                        <input type="text" id="DNS" class="form-control" placeholder="For eg: www.company.com, company.com, company.net (comma separated)" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                </div>
+
+                <input id='hidden-file' type='file' hidden/>
             </div>
 
             <div class="row">
@@ -176,18 +229,48 @@
             </div>
 
             <div class="row mb-5 mt-3" id="output-div">
-                <div class="input-group mb-3">
-                    <textarea id="output" class="form-control form-control-plaintext" rows="4" readonly></textarea>
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="copy-btn" onclick="copyToClipboard('output', this)"><i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard</button>
-                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><a id="output-download" download><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>as File</a></button>
+                <!-- <div class="col-12" id="output-1">aaaaaaaaaaaaaaaaaaaaaaaaa
+                    <div class="input-group mb-3">
+                        <textarea id="output" class="form-control form-control-plaintext" rows="4" readonly></textarea>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="copy-btn" onclick="copyToClipboard('output', this)"><i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard</button>
+                            <button class="btn btn-outline-secondary" type="button" id="download-btn"><a id="output-download" download><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>as File</a></button>
+                        </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </body>
 
     <script>
+        var download_urls = [];
+        var output_count = 0;
+        var result_count  = 0;
+
+        function beforeUnloadFunction() {
+            return "";
+        }
+
+        // function unloadFunction(){
+        //     $.ajax({
+        //         type: "POST",
+        //         // enctype: 'multipart/form-data',
+        //         url: "./delete",
+        //         data: {"a":"a"},
+        //         // processData: false,
+        //         // contentType: false,
+        //         // cache: false,
+        //         // timeout: 600000,
+        //         success: function (res) {   
+        //             console.log("SUCCESS : ", res);
+        //         },
+        //         error: function (e) {
+        //             console.log("ERROR : ", e);
+        //         }
+        //     });
+        //     return ;
+        // }
+  
         $(document).ready(function(){
             $("#color-0").prop("checked", true);
             $("#ip-sym-enc").hide();
@@ -199,7 +282,7 @@
             $("#ip-cert-pvt").hide();
             $("#enc-dec-toggle-div").hide();
             $("#sign-verify-toggle-div").hide();
-            $("#output-div").hide();
+            $("#ssl-cert-div").hide();
             
 
             $("input[name='crypt-option']").change(function(){
@@ -213,8 +296,9 @@
                 $("#ip-cert-pvt").hide();
                 $("#enc-dec-toggle-div").hide();
                 $("#sign-verify-toggle-div").hide();
-                // $("#output-div").hide();
+                $("#ssl-cert-div").hide();
                 $("#submit-btn").html("GENERATE"); 
+                $("#file-ip").prop("disabled", false);
 
                 if($("input[name='crypt-option']:checked").val()=="sym-enc"){
                     $("#ip-sym-enc").show();
@@ -229,7 +313,6 @@
                     $("#submit-btn").html("ENCRYPT"); 
                 }
                 else if($("input[name='crypt-option']:checked").val()=="digital-sign"){
-                    
                     if($("#sign-verify-toggle").prop("checked")==true){
                         $("#submit-btn").html("SIGN");
                         $("#ip-cert-pvt").show();
@@ -241,6 +324,10 @@
                     }
                     $("#sign-verify-toggle-div").show();  
                 } 
+                else if($("input[name='crypt-option']:checked").val()=="ssl-cert"){
+                    $("#file-ip").prop("disabled", true);
+                    $("#ssl-cert-div").show();
+                }
             });
 
             $("#sign-verify-toggle").change(function(){
@@ -282,7 +369,7 @@
 
             $("#submit-btn").click(function(){
                 $("#error").html("");
-                if($("input[name='crypt-option']:checked").val()!="digital-cert" && $("#file-ip").val()==""){
+                if($("input[name='crypt-option']:checked").val()!="ssl-cert" && $("#file-ip").val()==""){
                     $("#error").html("*Please select a file").fadeOut().fadeIn();
                 }
                 else{
@@ -293,31 +380,43 @@
                     }
                     else if($("input[name='crypt-option']:checked").val()=="asym-enc"){
                         if($("#enc-dec-toggle").prop("checked")==false){
-                            $("#error").html("*Please enter the key").fadeOut().fadeIn()
+                            $("#error").html("*Please enter the key").fadeOut().fadeIn();
                         }
                     }
                     else if($("input[name='crypt-option']:checked").val()=="digital-sign"){
                         if($("#sign-verify-toggle").prop("checked")==true && $("#cert-pvtkey").val()==""){
                             $("#error").html("*Please enter the private key").fadeOut().fadeIn();
-                            flag = "false";
+                            flag = false;
                         }
                         else if($("#sign-verify-toggle").prop("checked")==false && $("#cert-pubkey").val()==""){
                             $("#error").html("*Please enter the public key").fadeOut().fadeIn();
-                            flag = "false";
+                            flag = false;
                         }
                         else if($("#sign-verify-toggle").prop("checked")==false && $("#cert-sign").val()==""){
                             $("#error").html("*Please enter the digital signature").fadeOut().fadeIn();
-                            flag = "false";
+                            flag = false;
                         } 
                     }
+                    // else if($("input[name='crypt-option']:checked").val()=="digital-cert"){
+                    //     flag = true;
+                    // }
                     if(flag==true){
-                        if($("input[name='crypt-option']:checked").val()=="digital-cert"){
+                        var url = "";
+                        if($("input[name='crypt-option']:checked").val()=="ssl-cert"){
                             var data = new FormData();
+                            data.append("Country", $("country").val());
+                            data.append("State", $("state").val());
+                            data.append("Locality", $("locality").val());
+                            data.append("Organization", $("organization").val());
+                            data.append("Organizational Unit", $("organizational-unit").val());
+                            data.append("Common Name", $("common-name").val());
+                            data.append("DNS", $("DNS").val());
+                            data.append("days", $("days").val());
+                            url = "./ssl-certificate"
                         }
                         else{
                             var form = $('#file-form')[0];
                             var data = new FormData(form);
-                            var url = "";
                             if($("input[name='crypt-option']:checked").val()=="hash"){
                                 data.append("algo", "-sha256");
                                 url = "./hash";
@@ -355,54 +454,75 @@
                                 }
                                 data.append("hash_algo", "-sha256");
                                 url = "./digital-signature";
-                            };
-                            
-                            $.ajax({
-                                type: "POST",
-                                enctype: 'multipart/form-data',
-                                url: url,
-                                data: data,
-                                processData: false,
-                                contentType: false,
-                                cache: false,
-                                // timeout: 600000,
-                                success: function (res) {   
-                                    console.log("SUCCESS : ", res);
-                                    let output = JSON.parse(res);
-                                    if (output["status"]=="Success"){
-                                        $("#output-download").attr("href", output["file_url"]);
-                                        let txt_op = readFile(output["file_url"]);
-                                        $("#output").val(txt_op);
-                                        $("#output-div").show();
-                                    }
-                                    else{
-                                        console.log("ERROR : ");
-                                    }
-                                },
-                                error: function (e) {
-                                    console.log("ERROR : ", e);
-                                }
-                            });
-                            
+                            }                            
                         }
-                        
+                        $.ajax({
+                            type: "POST",
+                            enctype: 'multipart/form-data',
+                            url: url,
+                            data: data,
+                            processData: false,
+                            contentType: false,
+                            cache: false,
+                            // timeout: 600000,
+                            success: function (res) {   
+                                console.log("SUCCESS : ", res);
+                                let output = JSON.parse(res);
+                                if (output["status"]=="Success"){
+                                    handleOutput(output);
+                                }
+                                else{
+                                    console.log("ERROR : ");
+                                }
+                            },
+                            error: function (e) {
+                                console.log("ERROR : ", e);
+                            }
+                        });
                     } 
                 }
+            });
+            $(window).on("unload", function(){
+                var fd = new FormData();
+                fd.append('data', download_urls.join());
+                navigator.sendBeacon('./delete', fd);
+                
             });
         });
 
         function getRSAKey(){
-            $.get( "./gen-keypair", function(data) {
-                data = JSON.parse(data);
-                if(data["status"]=="Success"){
-                    $("#enc-pubkey").val(data["publicKey"]);
-                    $("#enc-pvtkey").val(data["privateKey"]);
-                }
-                else{
-                    $("#enc-pubkey").val("Error");
-                    $("#enc-pvtkey").val("Error");
+            $.ajax({            
+                url: "./gen-keypair",
+                success: function (data) {  
+                    data = JSON.parse(data); 
+                    console.log(data);
+                    if(data["status"]=="Success"){
+                        let pubkey = readFile(data["publicKey_file"]);
+                        let pvtkey = readFile(data["privateKey_file"]);
+                        $("#enc-pubkey").val(pubkey);
+                        $("#enc-pvtkey").val(pvtkey);
+                    }
+                    else{
+                        $("#enc-pubkey").val("Error");
+                        $("#enc-pvtkey").val("Error");
+                    }
+                },
+                error: function (e) {
+                    $("#enc-pubkey").val("Error "+e);
+                    $("#enc-pvtkey").val("Error "+e);
                 }
             });
+            // $.ajax( "./gen-keypair", function(data) {
+            //     data = JSON.parse(data);
+            //     if(data["status"]=="Success"){
+            //         $("#enc-pubkey").val(data["publicKey"]);
+            //         $("#enc-pvtkey").val(data["privateKey"]);
+            //     }
+            //     else{
+            //         $("#enc-pubkey").val("Error");
+            //         $("#enc-pvtkey").val("Error");
+            //     }
+            // });
         }
 
         function copyToClipboard(id, button) {
@@ -431,5 +551,40 @@
             });
             return return_data;
         }
+
+        function uploadFile(id){
+            $("#hidden-file").click();
+            $("#hidden-file").change(function(evt){
+                file = evt.target.files[0];
+                if (!file) {
+                    return;
+                }
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    console.log(id);
+                    $("#"+id).val(event.target.result);          
+                }
+                reader.readAsText(file);
+                $("#hidden-file").unbind('change');
+            });
+        }
+
+
+        function handleOutput(output){
+            let new_ouput = '';
+            let fileurls = {};
+            for(let op of output["result"]){
+                new_ouput += '<div class="col-12" id="output-group-'+output_count+'">'+op["description"]+'<div class="input-group mb-3"><textarea id="output-'+output_count+'" class="form-control form-control-plaintext" rows="4" readonly></textarea><div class="input-group-append"><button class="btn btn-outline-secondary" type="button" id="copy-btn" onclick="copyToClipboard(\'output-'+output_count+'\', this)"><i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard</button><button class="btn btn-outline-secondary" type="button" id="download-btn"><a id="output-download" href="'+op["file_url"]+'" download><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>as File</a></button></div></div></div>';
+                fileurls["#output-"+output_count] = op["file_url"];            
+                output_count ++;
+                download_urls.push(op["file_url"]);   
+            }
+            $("#output-div").prepend(new_ouput);
+            for(let url in fileurls){
+                let txt_op = readFile(fileurls[url]);
+                $(url).val(txt_op);
+            }    
+            result_count++;
+        }        
     </script>
 </html>
