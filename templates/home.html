@@ -5,19 +5,22 @@
         <title>CryptIt</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, user-scalable=no" />
         <!-- bootstrap4 -->
-        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/bootstrap.min.css') }}">
         
         <!-- fa icons -->
-        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" id="bootstrap-css">
+        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" >
         
         <!-- bootstrap toggle -->
-        <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/bootstrap-toggle.min.css') }}">
         
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'home.css') }} ">
-        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-        <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-        <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/home.css') }}">
+        <script src="{{ url_for('static', filename = 'js/jquery-3.2.1.slim.min.js') }}"></script>
+        <script src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename = 'js/jquery-1.11.1.min.js') }}"></script>
+        <script src="{{ url_for('static', filename = 'js/bootstrap-toggle.min.js') }}"></script>
+        <script src="{{ url_for('static', filename = 'js/moment-with-locales.min.js') }}"></script>
     </head>
 
     <style>
@@ -27,14 +30,23 @@
         a:hover { 
             text-decoration: none; 
         } 
+        .output-group {
+            border-top: 1px solid #333; 
+            border-bottom: 1px solid #111;
+        }
     </style>
     
-    <body onbeforeunload="return beforeUnloadFunction()" >
+    <body class="theme-dark" onbeforeunload="return beforeUnloadFunction()">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top" id="main-navbar" style="background-color: #374667;">
+            <a class="navbar-brand" href="./"><strong>&nbsp;&nbsp;CryptIT</strong></a>
+            <span class="mode-toggle"></span>
+                <span class="wave"></span>
+        </nav>
         <div class="container col-md-10 mx-auto mt-5">
             <div class="row my-2">
                 <div class="col-2 text-center mx-auto">Generate File Hash</div>
                 <div class="col-2 text-center mx-auto">Symmetric encryption</div>
-                <div class="col-2 text-center mx-auto">Asymmetric encryption</div>
+                <div class="col-2 text-center mx-auto">RSA keypair generation</div>
                 <div class="col-2 text-center mx-auto">Sign file Digitally</div>
                 <div class="col-2 text-center mx-auto">Generate SSL Certificate</div>
             </div>
@@ -84,8 +96,22 @@
                   </label>
                 </div>
             </div>
+            
+            <div class="row" id="alert-div">
+                
+            </div>
 
             <div class="row mb-3" id="input-fields">
+                <div class="col-12 input-group mb-3" id="ip-hash-verify">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Enter Hash<br>of file</span>
+                    </div>
+                    <textarea id="verify-hash" class="form-control" rows="5" aria-label="With textarea"></textarea>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="upload-btn" onclick="uploadFile('verify-hash')"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Key File</button>
+                    </div>
+                </div>
+
                 <div class="col-12 input-group mb-3" id="ip-sym-enc">
                     <div class="input-group-prepend">
                       <span class="input-group-text" id="basic-addon1">Enter password</span>
@@ -100,7 +126,7 @@
                     <textarea id="enc-pubkey" class="form-control form-control-plaintext" rows="4" readonly aria-label="With textarea"></textarea>
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="button" id="copy-btn" onclick="copyToClipboard('enc-pubkey', this)"><i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard</button>
-                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>Key File</button>
+                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><a id="public-key-download" download><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>Key File</a></button>
                     </div>
                 </div>
 
@@ -111,17 +137,7 @@
                     <textarea id="enc-pvtkey" class="form-control form-control-plaintext" rows="4" readonly></textarea>                    
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="button" id="copy-btn" onclick="copyToClipboard('enc-pvtkey', this)"><i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard</button>
-                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>Key File</button>
-                    </div>
-                </div>
-
-                <div class="col-12 input-group mb-3" id="ip-asym-dec">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Enter private<br> key</span>
-                    </div>
-                    <textarea id="" class="form-control" rows="5" aria-label="With textarea"></textarea>
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="upload-btn" onclick="uploadFile('')"><i class="fa fa-upload" aria-hidden="true"></i><br>Upload<br>Key File</button>
+                        <button class="btn btn-outline-secondary" type="button" id="download-btn"><a id="private-key-download" download><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>Key File</a></button>
                     </div>
                 </div>
 
@@ -156,51 +172,51 @@
                 </div>
 
                 <div id="ssl-cert-div" class="row">
-                    <div class="col-6 input-group mb-3" id="" style="max-width: 100%;">
+                    <div class="col-6 input-group mb-3" style="max-width: 100%;">
                         <div class="input-group-prepend">
-                          <span class="input-group-text" id="basic-addon1">Country</span>
+                          <span class="input-group-text">Country</span>
                         </div>
-                        <input type="text" id="country" class="form-control" placeholder="For example: US" aria-label="Username" aria-describedby="basic-addon1">
+                        <input type="text" id="country" class="form-control" placeholder="US">
                     </div>
-                    <div class="col-6 input-group mb-3" id="" style="max-width: 100%;">
+                    <div class="col-6 input-group mb-3" style="max-width: 100%;">
                         <div class="input-group-prepend">
-                          <span class="input-group-text" id="basic-addon1">State</span>
+                          <span class="input-group-text">State</span>
                         </div>
-                        <input type="text" id="state" class="form-control" placeholder="For example: VA" aria-label="Username" aria-describedby="basic-addon1">
+                        <input type="text" id="state" class="form-control" placeholder="VA">
                     </div>
-                    <div class="col-6 input-group mb-3" id="" style="max-width: 100%;">
+                    <div class="col-6 input-group mb-3" style="max-width: 100%;">
                         <div class="input-group-prepend">
-                          <span class="input-group-text" id="basic-addon1">Locality</span>
+                          <span class="input-group-text">Locality</span>
                         </div>
-                        <input type="text" id="locality" class="form-control" placeholder="For example: SomeCity" aria-label="Username" aria-describedby="basic-addon1">
+                        <input type="text" id="locality" class="form-control" placeholder="SomeCity">
                     </div>
-                    <div class="col-6 input-group mb-3" id="" style="max-width: 100%;">
+                    <div class="col-6 input-group mb-3" style="max-width: 100%;">
                         <div class="input-group-prepend">
-                          <span class="input-group-text" id="basic-addon1">Organization</span>
+                          <span class="input-group-text">Organization</span>
                         </div>
-                        <input type="text" id="organization" class="form-control" placeholder="For example: MyCompany" aria-label="Username" aria-describedby="basic-addon1">
+                        <input type="text" id="organization" class="form-control" placeholder="MyCompany" aria-label="Username">
                     </div>
-                    <div class="col-6 input-group mb-3" id="" style="max-width: 100%;">
+                    <div class="col-6 input-group mb-3" style="max-width: 100%;">
                         <div class="input-group-prepend">
-                          <span class="input-group-text" id="basic-addon1">Organizational Unit</span>
+                          <span class="input-group-text">Organizational Unit</span>
                         </div>
-                        <input type="text" id="organizational-unit" class="form-control" placeholder="For example: MyDivision" aria-label="Username" aria-describedby="basic-addon1">
+                        <input type="text" id="organizational-unit" class="form-control" placeholder="MyDivision">
                     </div>
-                    <div class="col-6 input-group mb-3" id="" style="max-width: 100%;">
+                    <div class="col-6 input-group mb-3" style="max-width: 100%;">
                         <div class="input-group-prepend">
-                          <span class="input-group-text" id="basic-addon1">Common Name</span>
+                          <span class="input-group-text">Common Name</span>
                         </div>
-                        <input type="text" id="common-name" class="form-control" placeholder="For example: www.company.com" aria-label="Username" aria-describedby="basic-addon1">
+                        <input type="text" id="common-name" class="form-control" placeholder="www.company.com">
                     </div>
-                    <div class="col-4 input-group mb-3" id="" style="max-width: 100%;">
+                    <div class="col-4 input-group mb-3" style="max-width: 100%;">
                         <div class="input-group-prepend">
-                          <span class="input-group-text" id="basic-addon1">Certificate Validity</span>
+                          <span class="input-group-text">Validity</span>
                         </div>
-                        <input type="text" id="days" class="form-control" placeholder="In days (For eg: 365)" aria-label="Username" aria-describedby="basic-addon1">
+                        <input type="text" id="days" class="form-control" placeholder="In days (For eg: 365)">
                     </div>
-                    <div class="col-8 input-group mb-3" id="" style="max-width: 100%;">
+                    <div class="col-8 input-group mb-3" style="max-width: 100%;">
                         <div class="input-group-prepend">
-                          <span class="input-group-text" id="basic-addon1">DNS information</span>
+                          <span class="input-group-text">DNS information</span>
                         </div>
                         <input type="text" id="DNS" class="form-control" placeholder="For eg: www.company.com, company.com, company.net (comma separated)" aria-label="Username" aria-describedby="basic-addon1">
                     </div>
@@ -223,26 +239,90 @@
                     <div id="sign-verify-toggle-div" class="mb-3">
                         <input type="checkbox" id="sign-verify-toggle" data-toggle="toggle" data-on="<i class='fa fa-lock'></i> Sign" data-off="<i class='fa fa-unlock'></i> Verify" data-onstyle="success" data-offstyle="danger" checked>
                     </div>
+                    <div id="hash-verify-toggle-div" class="mb-3">
+                        <input type="checkbox" id="hash-verify-toggle" data-toggle="toggle" data-on="<i class='fa fa-lock'></i> Hash" data-off="<i class='fa fa-unlock'></i> Verify" data-onstyle="success" data-offstyle="danger" checked>
+                    </div>
+                                   
+                    <div id="hash-select" class="mb-3 form-group col-12 row">
+                        <div class="col-12">
+                            <select class="form-control" name="hash-algo" id="hash-algo">
+                                <option value="-sha256" selected> &nbsp;Hash algorithm</option>
+                                <option value="-md5">md5</option>
+                                <option value="-sha1">SHA1</option>
+                                <option value="-sha224">SHA-224</option>
+                                <option value="-sha256">SHA-265</option>
+                                <option value="-sha384">SHA-384</option>
+                                <option value="-sha512">SHA-512</option>
+                                <option value="-sha3-224">SHA3-224</option>
+                                <option value="-sha3-256">SHA3-256</option>
+                                <option value="-sha3-384">SHA3-384</option>
+                                <option value="-sha3-512">SHA3-512</option>                                
+                            </select>
+                        </div>
+                    </div>
+                    <div id="sym-select" class="mb-3 form-group col-12 row">
+                        <div class="col-12">
+                            <select class="form-control" name="sym-algo" id="sym-algo">
+                                <option value="-aes-256-cbc" selected>Encryption algorithm</option>
+                                <option value="-bf">BlowFish</option>
+                                <option value="-aes-128-cbc">AES-128-CBC</option>
+                                <option value="-aes-128-ecb">AES-128-ECB</option>
+                                <option value="-aes-192-cbc">AES-192-CBC</option>
+                                <option value="-aes-192-ecb">AES-192-ECB</option>
+                                <option value="-aes-256-cbc">AES-256-CBC</option>
+                                <option value="-aes-256-ecb">AES-256-ECB</option>
+                                <option value="-des-cbc">DES-CBC</option>
+                                <option value="-des-ecb">DES-ECB</option>
+                                <option value="-des3">DES 3</option>
+                                <option value="-desx">DES-X</option>
+                            </select>
+                        </div>
+                    </div>
+                    
                     <button id="submit-btn" type="button" class="btn btn-lg btn-block btn-outline-light">GENERATE</button>
                     <div id="error" class="mt-3 text-danger"></div>
                 </div>
             </div>
-
-            <div class="row mb-5 mt-3" id="output-div">
-                <!-- <div class="col-12" id="output-1">aaaaaaaaaaaaaaaaaaaaaaaaa
-                    <div class="input-group mb-3">
-                        <textarea id="output" class="form-control form-control-plaintext" rows="4" readonly></textarea>
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button" id="copy-btn" onclick="copyToClipboard('output', this)"><i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard</button>
-                            <button class="btn btn-outline-secondary" type="button" id="download-btn"><a id="output-download" download><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>as File</a></button>
-                        </div>
-                    </div>
-                </div> -->
+            
+            <h1 id="output-label" class="col-12 mt-3">Output</h1>
+            <div class="row mb-5 mt-2" id="output-div">
             </div>
         </div>
     </body>
 
     <script>
+        $(window).resize(function () { 
+            $('body').css('padding-top', parseInt($('#main-navbar').css("height")));
+        });
+
+        $(window).load(function () { 
+            $('body').css('padding-top', parseInt($('#main-navbar').css("height")));        
+        });
+
+        $(".mode-toggle").on("click", function () {
+            $(this).addClass("animate");
+            setTimeout(() => {
+                $(this).toggleClass("active");
+                if($("#submit-btn").hasClass("btn-outline-light")){
+                    $("#submit-btn").removeClass("btn-outline-light");
+                    $("#submit-btn").addClass("btn-outline-dark");  
+                }
+                else{
+                    $("#submit-btn").removeClass("btn-outline-dark");
+                    $("#submit-btn").addClass("btn-outline-light");
+                }
+                if($("body").hasClass("theme-dark")){
+                    $("body").removeClass("theme-dark");
+                    $("body").addClass("theme-light");
+                }
+                else{
+                    $("body").removeClass("theme-light");
+                    $("body").addClass("theme-dark");
+                }
+            }, 150);
+            setTimeout(() => $(this).removeClass("animate"), 300);
+        });
+
         var download_urls = [];
         var output_count = 0;
         var result_count  = 0;
@@ -250,29 +330,10 @@
         function beforeUnloadFunction() {
             return "";
         }
-
-        // function unloadFunction(){
-        //     $.ajax({
-        //         type: "POST",
-        //         // enctype: 'multipart/form-data',
-        //         url: "./delete",
-        //         data: {"a":"a"},
-        //         // processData: false,
-        //         // contentType: false,
-        //         // cache: false,
-        //         // timeout: 600000,
-        //         success: function (res) {   
-        //             console.log("SUCCESS : ", res);
-        //         },
-        //         error: function (e) {
-        //             console.log("ERROR : ", e);
-        //         }
-        //     });
-        //     return ;
-        // }
   
         $(document).ready(function(){
             $("#color-0").prop("checked", true);
+            $("#ip-hash-verify").hide();
             $("#ip-sym-enc").hide();
             $("#ip-asym-enc-pub").hide();
             $("#ip-asym-enc-priv").hide();
@@ -283,10 +344,12 @@
             $("#enc-dec-toggle-div").hide();
             $("#sign-verify-toggle-div").hide();
             $("#ssl-cert-div").hide();
+            $("#sym-select").hide();
+            $("#output-label").hide();
             
 
             $("input[name='crypt-option']").change(function(){
-                console.log($("input[name='crypt-option']:checked").val());
+                $("#ip-hash-verify").hide();
                 $("#ip-sym-enc").hide();
                 $("#ip-asym-enc-pub").hide();
                 $("#ip-asym-enc-priv").hide();
@@ -296,21 +359,37 @@
                 $("#ip-cert-pvt").hide();
                 $("#enc-dec-toggle-div").hide();
                 $("#sign-verify-toggle-div").hide();
+                $("#hash-verify-toggle-div").hide();
                 $("#ssl-cert-div").hide();
                 $("#submit-btn").html("GENERATE"); 
                 $("#file-ip").prop("disabled", false);
+                $("#hash-select").hide();
+                $("#sym-select").hide();
 
-                if($("input[name='crypt-option']:checked").val()=="sym-enc"){
+                if($("input[name='crypt-option']:checked").val()=="hash"){
+                    $("#hash-select").show();
+                    if($("#hash-verify-toggle").prop("checked")==true){
+                        $("#ip-hash-verify").hide();
+                        $("#submit-btn").html("GENERATE");
+                    }
+                    else{
+                        $("#ip-hash-verify").show();
+                        $("#submit-btn").html("VERIFY");
+                    }
+                    $("#hash-verify-toggle-div").show();
+                }
+                else if($("input[name='crypt-option']:checked").val()=="sym-enc"){
+                    $("#sym-select").show();
                     $("#ip-sym-enc").show();
                     $("#enc-dec-toggle-div").show();
                     $("#submit-btn").html("ENCRYPT");
                 }
                 else if($("input[name='crypt-option']:checked").val()=="asym-enc"){
-                    $("#enc-dec-toggle-div").show(); 
+                    $("#file-ip").prop("disabled", true); 
                     getRSAKey();
                     $("#ip-asym-enc-pub").show();
                     $("#ip-asym-enc-priv").show(); 
-                    $("#submit-btn").html("ENCRYPT"); 
+                    $("#submit-btn").html("REFRESH KEYPAIR"); 
                 }
                 else if($("input[name='crypt-option']:checked").val()=="digital-sign"){
                     if($("#sign-verify-toggle").prop("checked")==true){
@@ -327,6 +406,17 @@
                 else if($("input[name='crypt-option']:checked").val()=="ssl-cert"){
                     $("#file-ip").prop("disabled", true);
                     $("#ssl-cert-div").show();
+                }
+            });
+
+            $("#hash-verify-toggle").change(function(){ 
+                if($(this).prop("checked")==true){
+                    $("#ip-hash-verify").hide();
+                    $("#submit-btn").html("GENERATE");
+                }
+                else{
+                    $("#ip-hash-verify").show();
+                    $("#submit-btn").html("VERIFY");
                 }
             });
 
@@ -352,36 +442,25 @@
                 else{
                     $("#submit-btn").html("DECRYPT"); 
                 }
-                if($("input[name='crypt-option']:checked").val()=="asym-enc"){
-                    $("#ip-asym-enc-pub").hide();
-                    $("#ip-asym-enc-priv").hide();
-                    $("#ip-asym-dec").hide();
-                    if($(this).prop("checked")==true){
-                        getRSAKey();
-                        $("#ip-asym-enc-pub").show();
-                        $("#ip-asym-enc-priv").show();
-                    }
-                    else{
-                        $("#ip-asym-dec").show();
-                    }
-                }
             });
 
             $("#submit-btn").click(function(){
                 $("#error").html("");
-                if($("input[name='crypt-option']:checked").val()!="ssl-cert" && $("#file-ip").val()==""){
+                if($("input[name='crypt-option']:checked").val()!="ssl-cert" && $("input[name='crypt-option']:checked").val()!="asym-enc" && $("#file-ip").val()==""){
                     $("#error").html("*Please select a file").fadeOut().fadeIn();
+                }
+                else if($("input[name='crypt-option']:checked").val()=="asym-enc"){
+                    getRSAKey();    
                 }
                 else{
                     var flag = true;
-                    if($("input[name='crypt-option']:checked").val()=="sym-enc" && $("#sym-password").val()==""){
-                        $("#error").html("*Please enter a password").fadeOut().fadeIn();
+                    if($("input[name='crypt-option']:checked").val()=="hash" && $("#hash-verify-toggle").prop("checked")==false && $("#verify-hash").val()==""){
+                        $("#error").html("*Please enter hash value").fadeOut().fadeIn();
                         flag = false;
                     }
-                    else if($("input[name='crypt-option']:checked").val()=="asym-enc"){
-                        if($("#enc-dec-toggle").prop("checked")==false){
-                            $("#error").html("*Please enter the key").fadeOut().fadeIn();
-                        }
+                    else if($("input[name='crypt-option']:checked").val()=="sym-enc" && $("#sym-password").val()==""){
+                        $("#error").html("*Please enter a password").fadeOut().fadeIn();
+                        flag = false;
                     }
                     else if($("input[name='crypt-option']:checked").val()=="digital-sign"){
                         if($("#sign-verify-toggle").prop("checked")==true && $("#cert-pvtkey").val()==""){
@@ -397,9 +476,6 @@
                             flag = false;
                         } 
                     }
-                    // else if($("input[name='crypt-option']:checked").val()=="digital-cert"){
-                    //     flag = true;
-                    // }
                     if(flag==true){
                         var url = "";
                         if($("input[name='crypt-option']:checked").val()=="ssl-cert"){
@@ -418,8 +494,15 @@
                             var form = $('#file-form')[0];
                             var data = new FormData(form);
                             if($("input[name='crypt-option']:checked").val()=="hash"){
-                                data.append("algo", "-sha256");
+                                data.append("algo", $("#hash-algo").find(":selected").val());
                                 url = "./hash";
+                                if($("#hash-verify-toggle").prop("checked")==true){
+                                    data.append("type", "hash");
+                                }
+                                else{
+                                    data.append("type", "verify");
+                                    data.append("verify_hash", $("#verify-hash").val());
+                                }
                             }
                             else if($("input[name='crypt-option']:checked").val()=="sym-enc"){
                                 if($("#enc-dec-toggle").prop("checked")==true){
@@ -428,19 +511,9 @@
                                 else{
                                     data.append("type", "dec");
                                 }
-                                data.append("algo", "-aes-256-cbc");
+                                data.append("algo", $("#sym-algo").find(":selected").val());
                                 data.append("password", $("#sym-password").val());
                                 url = "./symmetric-encryption";
-                            }
-                            else if($("input[name='crypt-option']:checked").val()=="asym-enc"){
-                                if($("#enc-dec-toggle").prop("checked")==true){
-                                    data.append("type", "enc");
-                                }
-                                else{
-                                    data.append("type", "dec");
-                                }
-                                data.append("algo", "-rsa");
-                                url = "./asymmetric-encryption";
                             }
                             else if($("input[name='crypt-option']:checked").val()=="digital-sign"){
                                 if($("#sign-verify-toggle").prop("checked")==true){
@@ -466,17 +539,18 @@
                             cache: false,
                             // timeout: 600000,
                             success: function (res) {   
-                                console.log("SUCCESS : ", res);
                                 let output = JSON.parse(res);
                                 if (output["status"]=="Success"){
                                     handleOutput(output);
                                 }
                                 else{
-                                    console.log("ERROR : ");
+                                    let error = '<div class="col-12 mb-3 alert alert-danger alert-dismissible fade show" role="alert"><strong>Error!</strong> You should check in on some of those fields below.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+                                    $("alert-div").html(error);
                                 }
                             },
                             error: function (e) {
-                                console.log("ERROR : ", e);
+                                let error = '<div class="col-12 mb-3 alert alert-danger alert-dismissible fade show" role="alert"><strong>Error!</strong> '+e+'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+                                $("alert-div").html(error);
                             }
                         });
                     } 
@@ -495,34 +569,26 @@
                 url: "./gen-keypair",
                 success: function (data) {  
                     data = JSON.parse(data); 
-                    console.log(data);
                     if(data["status"]=="Success"){
                         let pubkey = readFile(data["publicKey_file"]);
                         let pvtkey = readFile(data["privateKey_file"]);
                         $("#enc-pubkey").val(pubkey);
                         $("#enc-pvtkey").val(pvtkey);
+                        $('#public-key-download').prop("href", data["publicKey_file"]);
+                        $('#private-key-download').prop("href", data["privateKey_file"]);
+                        download_urls.push(data["publicKey_file"]);
+                        download_urls.push(data["privateKey_file"]);
                     }
                     else{
-                        $("#enc-pubkey").val("Error");
-                        $("#enc-pvtkey").val("Error");
+                        let error = '<div class="col-12 mb-3 alert alert-danger alert-dismissible fade show" role="alert"><strong>An Error occurred!</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+                        $("alert-div").html(error);
                     }
                 },
                 error: function (e) {
-                    $("#enc-pubkey").val("Error "+e);
-                    $("#enc-pvtkey").val("Error "+e);
+                    let error = '<div class="col-12 mb-3 alert alert-danger alert-dismissible fade show" role="alert"><strong>Error!</strong> '+e+'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+                    $("alert-div").html(error);
                 }
             });
-            // $.ajax( "./gen-keypair", function(data) {
-            //     data = JSON.parse(data);
-            //     if(data["status"]=="Success"){
-            //         $("#enc-pubkey").val(data["publicKey"]);
-            //         $("#enc-pvtkey").val(data["privateKey"]);
-            //     }
-            //     else{
-            //         $("#enc-pubkey").val("Error");
-            //         $("#enc-pvtkey").val("Error");
-            //     }
-            // });
         }
 
         function copyToClipboard(id, button) {
@@ -545,7 +611,6 @@
                     return_data = data;
                 }, 
                 error: function(e){
-                    console.log("ERROR : ", e);
                     return_data = "ERROR"+e;
                 }
             });
@@ -561,7 +626,6 @@
                 }
                 var reader = new FileReader();
                 reader.onload = function(event) {
-                    console.log(id);
                     $("#"+id).val(event.target.result);          
                 }
                 reader.readAsText(file);
@@ -571,20 +635,30 @@
 
 
         function handleOutput(output){
-            let new_ouput = '';
+            if(result_count==0){
+                $("#output-label").show();
+            }
+            result_count++;
+            moment.locale(); 
+            let new_ouput = '<div class="col-12 output-group pb-4" id="output-group-'+result_count+'"><h2>&nbsp;&nbsp;#'+result_count+' '+output["algo"]+' <small>'+moment().format('MMMM Do YYYY, h:mm:ss a')+'</small></h2>';
             let fileurls = {};
             for(let op of output["result"]){
-                new_ouput += '<div class="col-12" id="output-group-'+output_count+'">'+op["description"]+'<div class="input-group mb-3"><textarea id="output-'+output_count+'" class="form-control form-control-plaintext" rows="4" readonly></textarea><div class="input-group-append"><button class="btn btn-outline-secondary" type="button" id="copy-btn" onclick="copyToClipboard(\'output-'+output_count+'\', this)"><i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard</button><button class="btn btn-outline-secondary" type="button" id="download-btn"><a id="output-download" href="'+op["file_url"]+'" download><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>as File</a></button></div></div></div>';
+                new_ouput += '<div class="col-12" id="output-div-'+output_count+'">'+op["description"]+'<div class="input-group mb-3"><textarea id="output-'+output_count+'" class="form-control form-control-plaintext" rows="4" readonly></textarea><div class="input-group-append"><button class="btn btn-outline-secondary" type="button" id="copy-btn" onclick="copyToClipboard(\'output-'+output_count+'\', this)"><i class="fa fa-clipboard" aria-hidden="true"></i><br>Copy to<br>Clipboard</button><button class="btn btn-outline-secondary" type="button" id="download-btn"><a id="output-download" href="'+op["file_url"]+'" download><i class="fa fa-download" aria-hidden="true"></i><br>Downlod<br>as File</a></button></div></div></div>';
                 fileurls["#output-"+output_count] = op["file_url"];            
                 output_count ++;
                 download_urls.push(op["file_url"]);   
             }
+            new_ouput += "</div>";
             $("#output-div").prepend(new_ouput);
             for(let url in fileurls){
                 let txt_op = readFile(fileurls[url]);
                 $(url).val(txt_op);
-            }    
-            result_count++;
+            }
+            $('html, body').animate({
+                scrollTop: $("#output-div").offset().top-120
+            }, 1000);            
         }        
+        
+    
     </script>
 </html>

@@ -15,10 +15,10 @@ def hashDigest(filename, hash_type):
     while True:
         if os.path.exists(hash_filename):
             break
-    with open(hash_filename, 'r') as f:
-        digest = f.read().split()
-    with open(hash_filename, 'w') as f:
-        f.write(digest[1]) 
+    # with open(hash_filename, 'r') as f:
+    #     digest = f.read().split()
+    # with open(hash_filename, 'w') as f:
+    #     f.write(digest[1]) 
         
     # os.remove(hash_filename)
     os.remove(filename)
@@ -32,6 +32,43 @@ def hashDigest(filename, hash_type):
                 "file_url": hash_filename
             }
         ]
+    }
+
+
+def verifyhashDigest(filename, verification_digest, hash_type):
+    hash_filename = os.path.join(upload_folder, str(random.randint(rand_beg, rand_end))+".txt")
+    output_filename = os.path.join(upload_folder, str(random.randint(rand_beg, rand_end))+".txt")
+  
+    command = "openssl dgst -out "+hash_filename+" "+hash_type+" "+filename+" 2>/dev/null"
+    out = os.system(command)
+    if out!=0:
+        return {"status": "Error"}
+    while True:
+        if os.path.exists(hash_filename):
+            break
+    with open(hash_filename, 'r') as f:
+        digest = f.read().split()[1]
+    
+    with open(output_filename, 'w') as f:
+        verification_digest = verification_digest.split()
+        if len(verification_digest)==1 and verification_digest[0]==digest:
+            f.write("Hash Verified.")
+        elif len(verification_digest)==2 and verification_digest[1]==digest:
+            f.write("Hash Verified.")
+        else:
+            f.write("Hash Invalid.")
+    
+    os.remove(hash_filename)
+    return {
+        "status": "Success", 
+        "algo": hash_type.lstrip("-").upper(), 
+        "result": [
+            {
+                "description": "Hash verification" + " (" + filename.split('/')[-1] + ")",
+                "ext": ".txt", 
+                "file_url": output_filename
+            }
+        ] 
     }
 
 
@@ -80,7 +117,7 @@ def symmetricDecrypt(filename, enc_type, password, op_ext=".png"):
     os.remove(filename)
     return {
         "status": "Success", 
-        "algo": dec_name.lstrip("-").upper(), 
+        "algo": enc_type.lstrip("-").upper(), 
         "result": [
             {
                 "description": "Decrypted file" + " (" + filename.split('/')[-1] + ")",

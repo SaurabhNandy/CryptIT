@@ -33,8 +33,13 @@ def genHash():
     filename = os.path.join(upload_folder, secure_filename(file_.filename))
     file_.save(filename)
     hash_type = "-" + request.form["algo"].strip().lstrip("-")
+    typ = request.form["type"].strip()
 
-    return_hash = hashDigest(filename, hash_type)
+    if typ=="hash":
+        return_hash = hashDigest(filename, hash_type)
+    else:
+        v_hash = request.form["verify_hash"].strip()
+        return_hash = verifyhashDigest(filename, v_hash, hash_type)
     return json.dumps(return_hash)
 
 
