@@ -545,12 +545,12 @@
                                 }
                                 else{
                                     let error = '<div class="col-12 mb-3 alert alert-danger alert-dismissible fade show" role="alert"><strong>Error!</strong> You should check in on some of those fields below.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-                                    $("alert-div").html(error);
+                                    $("#alert-div").html(error);
                                 }
                             },
                             error: function (e) {
                                 let error = '<div class="col-12 mb-3 alert alert-danger alert-dismissible fade show" role="alert"><strong>Error!</strong> '+e+'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-                                $("alert-div").html(error);
+                                $("#alert-div").html(error);
                             }
                         });
                     } 
@@ -581,12 +581,12 @@
                     }
                     else{
                         let error = '<div class="col-12 mb-3 alert alert-danger alert-dismissible fade show" role="alert"><strong>An Error occurred!</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-                        $("alert-div").html(error);
+                        $("#alert-div").html(error);
                     }
                 },
                 error: function (e) {
                     let error = '<div class="col-12 mb-3 alert alert-danger alert-dismissible fade show" role="alert"><strong>Error!</strong> '+e+'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-                    $("alert-div").html(error);
+                    $("#alert-div").html(error);
                 }
             });
         }

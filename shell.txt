@@ -1,0 +1,16 @@
+# hash
+# openssl dgst -out abc.txt -sha256 app.py
+
+# symmetric encryption
+# openssl enc -aes-256-cbc -pass pass:12345 -in hist.png -out file.enc -base64
+# openssl enc -aes-256-cbc -pass pass:12345 -in file.enc -out temp.py -base64 -d
+
+# digital signature
+# openssl dgst -sha256 -out abc.txt hist.png
+# openssl rsautl -sign -inkey pvt.pem -keyform PEM -in abc.txt -out sign.txt
+# openssl rsautl -verify -inkey pub.pem -pubin -keyform PEM -in sign.txt -out oghash.txt
+
+# ssl certificate
+# openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
+
+
